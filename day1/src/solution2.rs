@@ -14,13 +14,13 @@ use std::io::BufRead;
  */
 
 pub fn solve_solution<R: BufRead>(reader: R) -> u32 {
-    let rots = reader.lines().map(|l| parse_to_rot(l.unwrap().as_ref()));
-
     let mut pos = 50; // start at 50 clicks
-    let mut zero_counter = 0;
-    for rot in rots {
-        zero_counter += turn(&mut pos, rot);
-    }
+    
+    let zero_counter = reader
+    .lines()
+    .map(|l| parse_to_rot(l.unwrap().as_ref()))
+    .map(|r| turn(&mut pos, r))
+    .sum();
 
     zero_counter
 }
