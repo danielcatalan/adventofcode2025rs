@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 #[allow(unused_imports)]
 use regex::Regex;
 use std::io::BufRead;
@@ -8,7 +8,7 @@ use std::io::BufRead;
  *
  * for regex use Lazy struct.
  * eg:
- *  static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d").unwrap());
+ *  static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\d").unwrap());
  *
  */
 

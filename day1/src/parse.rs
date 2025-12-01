@@ -1,5 +1,5 @@
-use once_cell::sync::Lazy;
 use regex::Regex;
+use std::sync::LazyLock;
 
 pub enum Rotation {
     Left(i32),
@@ -15,7 +15,7 @@ pub enum Rotation {
  */
 
 pub fn parse_to_rot(line: &str) -> Rotation {
-    static RE: Lazy<Regex> = Lazy::new(|| {
+    static RE: LazyLock<Regex> = LazyLock::new(|| {
         Regex::new(r"(?P<rot>[LR])(?P<clicks>[0-9]{1,})").expect("RegEx Formula not valid")
     });
 

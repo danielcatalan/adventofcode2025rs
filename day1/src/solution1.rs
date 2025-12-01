@@ -1,6 +1,6 @@
 use crate::parse::{Rotation, parse_to_rot};
 #[allow(unused_imports)]
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 #[allow(unused_imports)]
 use regex::Regex;
 use std::io::BufRead;
