@@ -6,11 +6,17 @@
  *
  */
 use regex::Regex;
-use std::sync::LazyLock;
+use std::{ops::RangeInclusive, sync::LazyLock};
 
 pub struct IdRange {
     pub first: u32,
     pub last: u32,
+}
+
+impl IdRange {
+    pub fn iter(&self) -> RangeInclusive<u32> {
+        return self.first ..= self.last;
+    }
 }
 
 pub fn parse_to_range(s: &str) -> IdRange {

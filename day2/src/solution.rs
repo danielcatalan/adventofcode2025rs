@@ -1,31 +1,20 @@
-use crate::parse::IdRange;
 use crate::parse::parse_to_range;
 use std::io::BufRead;
 
 pub fn solve_solution1<R: BufRead>(reader: R) -> u64 {
     let invalid_ids = reader
-        .split(b',')
-        .map(|v| String::from_utf8(v.unwrap()).unwrap())
-        .map(|s| parse_to_range(&s))
-        .map(|range| find_invalid_ids(range))
+        .split(b',') // split by ','
+        .map(|v| String::from_utf8(v.unwrap()).unwrap())// work on strings instead of vec
+        .map(|s| parse_to_range(&s)) // parse to IdRange
+        .map(|r| r.iter()) // IdRange to Range-iter
+        .flatten() // get IDs
+        .filter(|n| is_invalid(*n)) // filter IDs
+        .map(|n| n as u64)
         .sum();
     invalid_ids
 }
 pub fn solve_solution2<R: BufRead>(reader: R) -> u64 {
     0
-}
-
-fn find_invalid_ids(range: IdRange) -> u64 {
-    let first = range.first;
-    let last = range.last;
-
-    let mut invalids = 0;
-    for id in first..=last {
-        if is_invalid(id) {
-            invalids += id as u64;
-        }
-    }
-    invalids
 }
 
 fn is_invalid(id: u32) -> bool {
@@ -81,19 +70,5 @@ mod tests {
         assert_eq!(true, is_invalid(99));
         assert_eq!(true, is_invalid(1010));
         assert_eq!(false, is_invalid(1011));
-    }
-    #[test]
-    fn test_find_invalid_ids() {
-        let range = IdRange {
-            first: 11,
-            last: 22,
-        };
-        assert_eq!(33, find_invalid_ids(range));
-
-        let range = IdRange {
-            first: 95,
-            last: 115,
-        };
-        assert_eq!(99, find_invalid_ids(range));
     }
 }
