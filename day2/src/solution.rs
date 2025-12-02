@@ -6,7 +6,7 @@ pub fn solve_solution1<R: BufRead>(reader: R) -> u64 {
 }
 
 pub fn solve_solution2<R: BufRead>(reader: R) -> u64 {
-    solution(reader, is_invalid)
+    solution(reader, is_invalid2)
 }
 
 fn solution<R: BufRead, P>(reader: R, invalid_pred: P) -> u64
@@ -39,6 +39,24 @@ fn is_invalid(id: u32) -> bool {
     } else {
         return false;
     }
+}
+
+fn is_invalid2(id: u32) -> bool{
+    let id_str = id.to_string();
+    let middle = id_str.len() / 2;
+
+    for i in 1..=middle{
+        let sub = &id_str[0..i];
+        let re_str = format!("^({})+$", sub);
+        let re = regex::Regex::new(&re_str).unwrap();
+        let invalid = re.is_match(&id_str);
+        if invalid{
+            // println!("Found!!");
+            return true
+        }
+    }
+    // println!("Not Found");
+    false
 }
 
 #[cfg(test)]
@@ -77,5 +95,19 @@ mod tests {
         assert_eq!(true, is_invalid(99));
         assert_eq!(true, is_invalid(1010));
         assert_eq!(false, is_invalid(1011));
+    }
+
+        #[test]
+    fn test_is_invalid2() {
+        assert_eq!(false, is_invalid2(10));
+        assert_eq!(true, is_invalid2(11));
+        assert_eq!(true, is_invalid2(111));
+        assert_eq!(true, is_invalid2(99));
+        assert_eq!(true, is_invalid2(1010));
+        assert_eq!(false, is_invalid2(1011));
+        assert_eq!(false, is_invalid2(123123122));
+        assert_eq!(true, is_invalid2(123123123));
+        assert_eq!(true, is_invalid2(565656));
+        assert_eq!(true, is_invalid2(2121212121));
     }
 }
