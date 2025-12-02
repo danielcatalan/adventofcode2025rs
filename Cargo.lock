@@ -65,6 +65,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "day2"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+ "toml",
+ "ureq",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
