@@ -2,19 +2,26 @@ use crate::parse::parse_to_range;
 use std::io::BufRead;
 
 pub fn solve_solution1<R: BufRead>(reader: R) -> u64 {
+    solution(reader, is_invalid)
+}
+
+pub fn solve_solution2<R: BufRead>(reader: R) -> u64 {
+    solution(reader, is_invalid)
+}
+
+fn solution<R: BufRead, P>(reader: R, invalid_pred: P) -> u64
+where P: Fn(u32)->bool
+{
     let invalid_ids = reader
         .split(b',') // split by ','
         .map(|v| String::from_utf8(v.unwrap()).unwrap())// work on strings instead of vec
         .map(|s| parse_to_range(&s)) // parse to IdRange
         .map(|r| r.iter()) // IdRange to Range-iter
         .flatten() // get IDs
-        .filter(|n| is_invalid(*n)) // filter IDs
+        .filter(|n| invalid_pred(*n)) // filter IDs
         .map(|n| n as u64)
         .sum();
     invalid_ids
-}
-pub fn solve_solution2<R: BufRead>(reader: R) -> u64 {
-    0
 }
 
 fn is_invalid(id: u32) -> bool {
