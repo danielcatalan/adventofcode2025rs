@@ -1,22 +1,45 @@
-#[allow(unused_imports)]
-use regex::Regex;
+use crate::parse::IdRange;
+use crate::parse::parse_to_range;
 use std::io::BufRead;
-#[allow(unused_imports)]
-use std::sync::LazyLock;
 
-/* Notes
- *
- * for regex use Lazy struct.
- * eg:
- *  static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\d").unwrap());
- *
- */
-
-pub fn solve_solution<R: BufRead>(reader: R) -> u32 {
-    let _x = reader
+pub fn solve_solution<R: BufRead>(reader: R) -> u64 {
+    let invalid_ids = reader
         .split(b',')
-        .map(|v| String::from_utf8(v.unwrap()).unwrap());
-    0
+        .map(|v| String::from_utf8(v.unwrap()).unwrap())
+        .map(|s| parse_to_range(&s))
+        .map(|range| find_invalid_ids(range))
+        .sum();
+    invalid_ids
+}
+
+fn find_invalid_ids(range: IdRange) -> u64 {
+    let first = range.first;
+    let last = range.last;
+
+    let mut invalids = 0;
+    for id in first..=last {
+        if is_invalid(id) {
+            invalids += id as u64;
+        }
+    }
+    invalids
+}
+
+fn is_invalid(id: u32) -> bool {
+    let id_str = id.to_string().into_bytes();
+    if (id_str.len() % 2) != 0 {
+        return false;
+    }
+    let len = id_str.len();
+    let mid = len / 2;
+
+    let x = &id_str[0..mid];
+    let y = &id_str[mid..];
+    if *x == *y {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 #[cfg(test)]
@@ -34,5 +57,28 @@ mod tests {
         let solution = solve_solution(reader);
         let expected = 1227775554;
         assert_eq!(expected, solution);
+    }
+
+    #[test]
+    fn test_is_invalid() {
+        assert_eq!(false, is_invalid(10));
+        assert_eq!(true, is_invalid(11));
+        assert_eq!(true, is_invalid(99));
+        assert_eq!(true, is_invalid(1010));
+        assert_eq!(false, is_invalid(1011));
+    }
+    #[test]
+    fn test_find_invalid_ids() {
+        let range = IdRange {
+            first: 11,
+            last: 22,
+        };
+        assert_eq!(33, find_invalid_ids(range));
+
+        let range = IdRange {
+            first: 95,
+            last: 115,
+        };
+        assert_eq!(99, find_invalid_ids(range));
     }
 }
