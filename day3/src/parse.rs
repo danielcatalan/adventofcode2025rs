@@ -19,6 +19,7 @@ impl Bank {
         let (idx_10s, &max_10s) = batteries[0..(len_batteries - 1)]
             .iter()
             .enumerate() //
+            .rev()
             .max_by(|x, y| x.1.cmp(y.1))
             .unwrap(); //
 
@@ -30,7 +31,7 @@ impl Bank {
 
         let tens = (max_10s - 0x30) as usize;
         let ones = (max_1s - 0x30) as usize;
-        return tens * 10 + ones;
+        return (tens * 10) + ones;
     }
 }
 
@@ -52,6 +53,10 @@ mod tests {
         assert_bank(
             65,
             "1252442221213212222222222222211212142351224112221222212213421221422124234123226223512212112521243121",
+        );
+        assert_bank(
+            99,
+            "74661582914373377771857781284845741681685815142631524817317361384343713861915348743343524472515165481",
         );
     }
 }

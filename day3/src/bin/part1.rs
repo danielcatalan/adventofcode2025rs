@@ -9,7 +9,6 @@ fn main() {
     let reader = BufReader::new(f);
     let solution = solution::solve_solution1(reader);
     println!("Solution1: {solution}");
-    //16791 is too low
 
     println!("\n...Done.")
 }
