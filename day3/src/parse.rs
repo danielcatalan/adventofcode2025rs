@@ -14,30 +14,13 @@ impl Bank {
     }
 
     pub fn largest_jolt(&self) -> usize {
-        let len_batteries = self.batteries.len();
-        let batteries = self.batteries.as_bytes();
-        let (idx_10s, &max_10s) = batteries[0..(len_batteries - 1)]
-            .iter()
-            .enumerate() //
-            .rev()
-            .max_by(|x, y| x.1.cmp(y.1))
-            .unwrap(); //
-
-        let (_idx_1s, &max_1s) = batteries[(idx_10s + 1)..]
-            .iter()
-            .enumerate() //
-            .max_by(|x, y| x.1.cmp(y.1))
-            .unwrap(); //
-
-        let tens = (max_10s - 0x30) as usize;
-        let ones = (max_1s - 0x30) as usize;
-        return (tens * 10) + ones;
+        self.largest_jolt_impl(2)
     }
     pub fn largest_jolt2(&self) -> usize {
         self.largest_jolt_impl(12)
     }
 
-    pub fn largest_jolt_impl(&self, digits: usize) -> usize {
+    fn largest_jolt_impl(&self, digits: usize) -> usize {
         let bank_len = self.batteries.len();
         let batteries: &Vec<(usize, u8)> = &self.batteries.bytes().enumerate().collect();
         let mut start_idx = 0;
