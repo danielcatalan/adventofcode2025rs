@@ -1,5 +1,5 @@
-use crate::parse::parse_to_range;
-use std::io::BufRead;
+use crate::{factorsdb::FactorsDB, parse::parse_to_range};
+use std::{io::BufRead, sync::LazyLock};
 
 pub fn solve_solution1<R: BufRead>(reader: R) -> u64 {
     solution(reader, is_invalid)
@@ -10,11 +10,12 @@ pub fn solve_solution2<R: BufRead>(reader: R) -> u64 {
 }
 
 fn solution<R: BufRead, P>(reader: R, invalid_pred: P) -> u64
-where P: Fn(u32)->bool
+where
+    P: Fn(u32) -> bool,
 {
     let invalid_ids = reader
         .split(b',') // split by ','
-        .map(|v| String::from_utf8(v.unwrap()).unwrap())// work on strings instead of vec
+        .map(|v| String::from_utf8(v.unwrap()).unwrap()) // work on strings instead of vec
         .map(|s| parse_to_range(&s)) // parse to IdRange
         .map(|r| r.iter()) // IdRange to Range-iter
         .flatten() // get IDs
@@ -41,18 +42,21 @@ fn is_invalid(id: u32) -> bool {
     }
 }
 
-fn is_invalid2(id: u32) -> bool{
-    let id_str = id.to_string();
-    let middle = id_str.len() / 2;
+fn is_invalid2(id: u32) -> bool {
+    static DB: LazyLock<FactorsDB> = LazyLock::new(|| FactorsDB::new());
 
-    for i in 1..=middle{
-        let sub = &id_str[0..i];
-        let re_str = format!("^({})+$", sub);
-        let re = regex::Regex::new(&re_str).unwrap();
-        let invalid = re.is_match(&id_str);
-        if invalid{
+    let id_str = id.to_string();
+    let len = id_str.len();
+    let factors = DB.factors_of(len); // factors of length of id_str
+
+    for f1 in factors.iter().rev() {
+        // idea is that f1xf2 = length(id_str)
+        let f2 = len / f1;
+        let sub = &id_str[0..*f1];
+        let comp = sub.repeat(f2);
+        if comp == id_str {
             // println!("Found!!");
-            return true
+            return true;
         }
     }
     // println!("Not Found");
@@ -97,7 +101,7 @@ mod tests {
         assert_eq!(false, is_invalid(1011));
     }
 
-        #[test]
+    #[test]
     fn test_is_invalid2() {
         assert_eq!(false, is_invalid2(10));
         assert_eq!(true, is_invalid2(11));
