@@ -9,6 +9,6 @@ fn main() {
     let reader = BufReader::new(f);
     let solution = solution::solve_solution1(reader);
     println!("Solution1: {solution}");
-
+    assert_eq!(16993, solution);
     println!("\n...Done.")
 }

@@ -21,8 +21,13 @@ pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
         .sum();
     x
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> u32 {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+    let x = reader
+        .lines()
+        .map(|l| parse_bank(l.unwrap()))
+        .map(|bank| bank.largest_jolt2())
+        .sum();
+    x
 }
 
 #[cfg(test)]
@@ -47,14 +52,14 @@ mod tests {
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "987654321111111
+811111111111119
+234234234234278
+818181911112111",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(3121910778619, solution);
     }
 }
