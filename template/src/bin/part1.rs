@@ -1,4 +1,4 @@
-use {{project-name}}::solution1;
+use {{project-name}}::solution;
 
 use std::{fs::File, io::BufReader};
 
@@ -10,7 +10,7 @@ fn main() {
     let f = File::open("{{project-name}}/input/input.txt").unwrap();
 
     let reader = BufReader::new(f);
-    let solution = solution1::solve_solution(reader);
+    let solution = solution::solve_solution1(reader);
     println!("Solution1: {solution}");
 
     println!("\n...Done.")
