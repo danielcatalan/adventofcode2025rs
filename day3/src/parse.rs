@@ -34,13 +34,16 @@ impl Bank {
         return (tens * 10) + ones;
     }
     pub fn largest_jolt2(&self) -> usize {
-        const DIGITS: usize = 12;
+        self.largest_jolt_impl(12)
+    }
+
+    pub fn largest_jolt_impl(&self, digits: usize) -> usize {
         let bank_len = self.batteries.len();
         let batteries: &Vec<(usize, u8)> = &self.batteries.bytes().enumerate().collect();
         let mut start_idx = 0;
         let mut jolt: usize = 0;
-        for digit in 0..DIGITS {
-            let block_end = bank_len - (DIGITS - (digit + 1));
+        for dig in 0..digits {
+            let block_end = bank_len - (digits - (dig + 1));
             let (idx, bat) = batteries[start_idx..block_end]
                 .iter()
                 .rev()
