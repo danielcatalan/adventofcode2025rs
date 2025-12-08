@@ -1,8 +1,6 @@
-#[allow(unused_imports)]
-use regex::Regex;
 use std::io::BufRead;
-#[allow(unused_imports)]
-use std::sync::LazyLock;
+
+use crate::fridge::parse_fridge;
 
 /* Notes
  *
@@ -12,11 +10,13 @@ use std::sync::LazyLock;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
+    let fridge = parse_fridge(reader);
+    fridge.total_fresh_ids()
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+    let fridge = parse_fridge(reader);
+    fridge.possible_fresh_ids()
 }
 
 #[cfg(test)]
@@ -27,28 +27,42 @@ mod tests {
     #[test]
     fn example_solution1() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "3-5
+10-14
+16-20
+12-18
+
+1
+5
+8
+11
+17
+32",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution1(reader);
-        todo!("write an assertion")
+        let solution = solve_solution1(reader);
+        assert_eq!(3, solution)
     }
 
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "3-5
+10-14
+16-20
+12-18
+
+1
+5
+8
+11
+17
+32",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(14, solution)
     }
 }
