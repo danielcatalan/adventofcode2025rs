@@ -24,14 +24,21 @@ impl Fridge {
     }
 
     pub fn possible_fresh_ids(&self) -> usize {
-        let x: HashSet<usize> = self
-            .fresh_id_ranges
-            .iter()
-            .map(|it| it.clone())
-            .flatten()
-            .collect();
-        x.len()
+        let mut corrected_ranges = Vec::new();
+        for fresh_range in self.fresh_id_ranges.iter() {
+            correct_range(&mut corrected_ranges, fresh_range);
+        }
+
+        // count ranges
+        corrected_ranges.iter().map(|r| r.end() - r.start()).sum()
     }
+}
+
+fn correct_range(
+    corrected_ranges: &mut Vec<RangeInclusive<usize>>,
+    unique_range: &RangeInclusive<usize>,
+) -> Option<usize> {
+    todo!("add unique_range to corrected range")
 }
 
 pub fn parse_fridge<R: BufRead>(reader: R) -> Fridge {
@@ -59,4 +66,15 @@ fn parse_fresh_id_range(line: &str) -> RangeInclusive<usize> {
     let nums: Vec<usize> = line.split('-').map(|s| s.parse().unwrap()).collect();
 
     nums[0]..=nums[1]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sanity() {
+        let x = 0..=3;
+        assert_eq!(4, x.end() + 1 - x.start());
+    }
 }
