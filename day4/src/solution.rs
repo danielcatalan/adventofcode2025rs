@@ -1,9 +1,9 @@
+use crate::grid::parse_grid;
 #[allow(unused_imports)]
 use regex::Regex;
 use std::io::BufRead;
 #[allow(unused_imports)]
 use std::sync::LazyLock;
-
 /* Notes
  *
  * for regex use Lazy struct.
@@ -12,10 +12,13 @@ use std::sync::LazyLock;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> u32 {
-    0
+pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
+    let grid = parse_grid(reader);
+
+    grid.total_accessible_rolls()
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> u32 {
+
+pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
     0
 }
 
@@ -27,15 +30,21 @@ mod tests {
     #[test]
     fn example_solution1() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@.",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution1(reader);
-        todo!("write an assertion")
+        let solution = solve_solution1(reader);
+        assert_eq!(13, solution)
     }
 
     #[test]
