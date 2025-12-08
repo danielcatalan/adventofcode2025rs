@@ -15,11 +15,13 @@ use std::sync::LazyLock;
 pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
     let grid = parse_grid(reader);
 
-    grid.total_accessible_rolls()
+    grid.total_accessible_rolls().unwrap().len()
 }
 
-pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+    let mut grid = parse_grid(reader);
+
+    grid.total_rolls_removed()
 }
 
 #[cfg(test)]
@@ -50,14 +52,20 @@ mod tests {
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@.",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(43, solution)
     }
 }

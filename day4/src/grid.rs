@@ -1,7 +1,5 @@
 use std::io::BufRead;
 
-use crate::grid;
-
 pub struct Grid {
     map: Vec<Vec<Option<RollsOfPaper>>>,
     rows_len: usize,
@@ -39,18 +37,21 @@ impl Grid {
         }
     }
 
-    pub fn total_accessible_rolls(&self) -> usize {
+    pub fn total_accessible_rolls(&self) -> Option<Vec<(usize, usize)>> {
         let rows = self.rows_len;
         let columns = self.columns_len;
-        let mut total_accessible = 0;
+        let mut total_accessible = Vec::new();
         for r in 0..rows {
             for c in 0..columns {
                 if self.is_roll_accessible(r as i32, c as i32) {
-                    total_accessible += 1;
+                    total_accessible.push((r, c));
                 }
             }
         }
-        total_accessible
+        if total_accessible.len() > 0 {
+            return Some(total_accessible);
+        }
+        None
     }
 
     fn is_roll_accessible(&self, r: i32, c: i32) -> bool {
@@ -93,5 +94,21 @@ impl Grid {
             return true;
         }
         false
+    }
+
+    pub fn total_rolls_removed(&mut self) -> usize {
+        let mut total_rolls = 0;
+
+        while let Some(rolls) = self.total_accessible_rolls() {
+            total_rolls += rolls.len();
+            for roll in rolls {
+                let (r, c) = roll;
+                self.remove(r, c)
+            }
+        }
+        total_rolls
+    }
+    pub fn remove(&mut self, r: usize, c: usize) {
+        self.map[r][c] = None;
     }
 }
