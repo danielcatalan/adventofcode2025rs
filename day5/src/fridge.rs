@@ -1,7 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 use std::io::BufRead;
 use std::ops::RangeInclusive;
-use std::path::Component;
 
 use crate::borders::Border;
 
@@ -71,39 +70,7 @@ fn borders_to_corrected_ranges(borders: &Vec<Border>)-> Vec<RangeInclusive<usize
     corrected_ranges
 }
 
-fn correct_range(
-    corrected_ranges: &mut Vec<RangeInclusive<usize>>,
-    unique_range: &RangeInclusive<usize>,
-) {
-    for corrected_range in corrected_ranges.iter_mut() {
-        if let Some(range) = is_overlap(corrected_range, unique_range) {
-            *corrected_range = range;
-            return;
-        }
-    }
-    corrected_ranges.push(unique_range.clone());
-}
-fn is_overlap(
-    corrected_range: &RangeInclusive<usize>,
-    unique_range: &RangeInclusive<usize>,
-) -> Option<RangeInclusive<usize>> {
-    if corrected_range.contains(unique_range.start())
-        || corrected_range.contains(unique_range.end())
-    {
-        let start = if corrected_range.start() < unique_range.start() {
-            corrected_range.start()
-        } else {
-            unique_range.start()
-        };
-        let end = if corrected_range.end() > unique_range.end() {
-            corrected_range.end()
-        } else {
-            unique_range.end()
-        };
-        return Some(*start..=*end);
-    }
-    return None;
-}
+
 
 pub fn parse_fridge<R: BufRead>(reader: R) -> Fridge {
     let mut lines = reader.lines();
@@ -134,7 +101,7 @@ fn parse_fresh_id_range(line: &str) -> RangeInclusive<usize> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
 
     #[test]
     fn sanity() {
