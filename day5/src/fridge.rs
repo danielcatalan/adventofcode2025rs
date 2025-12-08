@@ -30,7 +30,10 @@ impl Fridge {
         }
 
         // count ranges
-        corrected_ranges.iter().map(|r| r.end() - r.start()).sum()
+        corrected_ranges
+            .iter()
+            .map(|r| r.end() + 1 - r.start())
+            .sum()
     }
 }
 
