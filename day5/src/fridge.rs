@@ -1,6 +1,9 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 use std::io::BufRead;
 use std::ops::RangeInclusive;
+use std::path::Component;
+
+use crate::borders::Border;
 
 pub struct Fridge {
     fresh_id_ranges: Vec<RangeInclusive<usize>>,
@@ -24,17 +27,48 @@ impl Fridge {
     }
 
     pub fn possible_fresh_ids(&self) -> usize {
-        let mut corrected_ranges = Vec::new();
-        for fresh_range in self.fresh_id_ranges.iter() {
-            correct_range(&mut corrected_ranges, fresh_range);
+        let mut borders: Vec<Border> = self.fresh_id_ranges
+            .iter()
+            .map(|r| {
+                let start = Border::Start(*r.start());
+                let end = Border::End(*r.end());
+                let x: [Border;2] = [start,end];
+                x
+            })
+            .flatten()
+            .collect();
+        borders.sort();
+        
+        let corrected_ranges = borders_to_corrected_ranges(&borders);
+
+        let x = corrected_ranges
+            .iter()
+            .map(|r| r.end()+1 - r.start())
+            .sum();
+        x
+    }
+}
+
+fn borders_to_corrected_ranges(borders: &Vec<Border>)-> Vec<RangeInclusive<usize>>{
+    let mut corrected_ranges = Vec::new();
+    let mut start_stack = VecDeque::new();
+    let mut end_stack = Vec::new();
+    for border in borders.iter(){
+        match border {
+            Border::Start(s) => start_stack.push_back(*s),
+            Border::End(e) => end_stack.push(*e),
         }
 
-        // count ranges
-        corrected_ranges
-            .iter()
-            .map(|r| r.end() + 1 - r.start())
-            .sum()
+        if start_stack.len() == end_stack.len(){
+            let start = start_stack.pop_front().unwrap();
+            let end = end_stack.pop().unwrap();
+            corrected_ranges.push(start..=end);
+            
+            start_stack.clear();
+            end_stack.clear();
+        }
     }
+    corrected_ranges
 }
 
 fn correct_range(
