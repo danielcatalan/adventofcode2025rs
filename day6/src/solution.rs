@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use crate::parse::parse_homework;
+use crate::parse::{parse_homework, parse_homework2};
 
 /* Notes
  *
@@ -14,8 +14,9 @@ pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
     let hw = parse_homework(reader);
     hw.grand_total()
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> u32 {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+    let hw = parse_homework2(reader);
+    hw.grand_total()
 }
 
 #[cfg(test)]

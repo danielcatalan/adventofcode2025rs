@@ -1,4 +1,8 @@
-use crate::{homework::HomeWork, operations::Operation};
+use crate::{
+    content::Content,
+    homework::{HomeWork, HomeWork2},
+    operations::Operation,
+};
 use regex::Regex;
 use std::{io::BufRead, sync::LazyLock};
 
@@ -19,6 +23,19 @@ pub fn parse_homework<R: BufRead>(reader: R) -> HomeWork {
     }
     let operations = parse_operators(&last_line);
     HomeWork::new(numbers, operations)
+}
+
+pub fn parse_homework2<R: BufRead>(reader: R) -> HomeWork2 {
+    let content = reader
+        .lines()
+        .map(|s| s.unwrap())
+        .map(|s| parse_line2(&s))
+        .collect();
+    HomeWork2::new(content)
+}
+
+pub fn parse_line2(line: &str) -> Vec<Content> {
+    line.as_bytes().iter().map(|b| Content::new(*b)).collect()
 }
 
 fn parse_numbers(line: &str) -> Option<Vec<usize>> {

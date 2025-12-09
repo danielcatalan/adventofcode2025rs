@@ -1,4 +1,4 @@
-use crate::operations::Operation;
+use crate::{content::Content, operations::Operation};
 
 pub struct HomeWork {
     numbers: Vec<Vec<usize>>,
@@ -6,6 +6,13 @@ pub struct HomeWork {
 }
 
 impl HomeWork {
+    pub fn new(numbers: Vec<Vec<usize>>, operations: Vec<Operation>) -> Self {
+        Self {
+            numbers,
+            operations,
+        }
+    }
+
     pub fn grand_total(&self) -> usize {
         if self.numbers[0].len() != self.operations.len() {
             panic!("missmatch between size of numbers and operations")
@@ -23,11 +30,18 @@ impl HomeWork {
         }
         grand_total
     }
+}
 
-    pub fn new(numbers: Vec<Vec<usize>>, operations: Vec<Operation>) -> Self {
-        Self {
-            numbers,
-            operations,
-        }
+pub struct HomeWork2 {
+    content: Vec<Vec<Content>>,
+}
+
+impl HomeWork2 {
+    pub fn new(content: Vec<Vec<Content>>) -> Self {
+        HomeWork2 { content }
+    }
+
+    pub(crate) fn grand_total(&self) -> usize {
+        todo!()
     }
 }
