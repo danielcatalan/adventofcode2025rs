@@ -1,8 +1,8 @@
-#[allow(unused_imports)]
-use regex::Regex;
 use std::io::BufRead;
-#[allow(unused_imports)]
-use std::sync::LazyLock;
+
+use crate::homework::parse_homework;
+
+
 
 /* Notes
  *
@@ -12,8 +12,9 @@ use std::sync::LazyLock;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> u32 {
-    0
+pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
+    let hw = parse_homework(reader);
+    hw.grand_total()
 }
 pub fn solve_solution2<R: BufRead>(_reader: R) -> u32 {
     0
@@ -27,24 +28,25 @@ mod tests {
     #[test]
     fn example_solution1() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "123 328  51 64 
+ 45 64  387 23 
+  6 98  215 314
+*   +   *   +  ",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution1(reader);
-        todo!("write an assertion")
+        let solution = solve_solution1(reader);
+        assert_eq!(4277556, solution);
+        
     }
 
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "123 328  51 64 
+ 45 64  387 23 
+  6 98  215 314
+*   +   *   +  ",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
