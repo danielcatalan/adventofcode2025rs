@@ -1,2 +1,4 @@
-pub mod solution;
 mod homework;
+mod operations;
+mod parse;
+pub mod solution;

@@ -1,8 +1,6 @@
 use std::io::BufRead;
 
-use crate::homework::parse_homework;
-
-
+use crate::parse::parse_homework;
 
 /* Notes
  *
@@ -37,7 +35,6 @@ mod tests {
         let reader = BufReader::new(input.as_bytes());
         let solution = solve_solution1(reader);
         assert_eq!(4277556, solution);
-        
     }
 
     #[test]
@@ -50,7 +47,7 @@ mod tests {
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(3263827, solution)
     }
 }
