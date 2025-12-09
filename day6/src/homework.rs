@@ -33,15 +33,27 @@ impl HomeWork {
 }
 
 pub struct HomeWork2 {
-    content: Vec<Vec<Content>>,
+    content: Vec<Vec<u8>>,
 }
 
 impl HomeWork2 {
-    pub fn new(content: Vec<Vec<Content>>) -> Self {
+    pub fn new(content: Vec<Vec<u8>>) -> Self {
         HomeWork2 { content }
     }
 
     pub(crate) fn grand_total(&self) -> usize {
         todo!()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sanity_check() {
+        let mut s = "  4  ".to_string();
+        s.retain(|c| matches!(c, '0'..='9'));
+        assert_eq!(4, s.parse().unwrap());
     }
 }

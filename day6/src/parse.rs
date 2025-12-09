@@ -34,8 +34,8 @@ pub fn parse_homework2<R: BufRead>(reader: R) -> HomeWork2 {
     HomeWork2::new(content)
 }
 
-pub fn parse_line2(line: &str) -> Vec<Content> {
-    line.as_bytes().iter().map(|b| Content::new(*b)).collect()
+pub fn parse_line2(line: &str) -> Vec<u8> {
+    line.as_bytes().to_vec()
 }
 
 fn parse_numbers(line: &str) -> Option<Vec<usize>> {
