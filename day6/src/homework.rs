@@ -1,6 +1,5 @@
-use core::num;
 
-use crate::{content::Content, operations::Operation};
+use crate::operations::Operation;
 
 pub struct HomeWork {
     numbers: Vec<Vec<usize>>,
@@ -83,7 +82,6 @@ impl HomeWork2 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn sanity_check() {
