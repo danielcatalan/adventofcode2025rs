@@ -1,3 +1,5 @@
+use core::num;
+
 use crate::{content::Content, operations::Operation};
 
 pub struct HomeWork {
@@ -42,7 +44,40 @@ impl HomeWork2 {
     }
 
     pub(crate) fn grand_total(&self) -> usize {
-        todo!()
+        let column_len = self.content[0].len();
+        let mut grand_total = 0;
+        let mut num_buffer = Vec::new();
+        for c in (0..column_len).rev(){
+            let mut num_str: String = self.content
+                .iter()
+                .map(|row| row[c] as char)
+                .collect();
+
+            let op_or_space = num_str.pop().unwrap();
+            num_str.retain(|c| matches!(c, '0'..='9'));
+            let num = num_str.parse();
+            if let Err(_) = num{
+                continue;
+            }
+            num_buffer.push(num.unwrap());
+
+            match op_or_space {
+                '+' => {
+                    let sum = num_buffer.iter().fold(0, |acc,x| acc+x);
+                    grand_total += sum;
+                    num_buffer.clear();
+                },
+                '*' => {
+                    let mult = num_buffer.iter().fold(1, |acc,x| acc*x);
+                    grand_total += mult;
+                    num_buffer.clear();
+                },
+                ' ' => {/*Do nothing */}, 
+                _ => panic!()
+            }
+
+        }
+        grand_total
     }
 }
 
