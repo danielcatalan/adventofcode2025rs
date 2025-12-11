@@ -1,0 +1,12 @@
+[package]
+name = "day8"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+regex = "1.12.2"
+
+[build-dependencies]
+ureq = { version = "3.1.4", features = [] }
+toml = "0.9.8"
+serde = { version = "1.0.228", features = ["derive"] }
