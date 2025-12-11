@@ -12,10 +12,10 @@ use std::sync::LazyLock;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> u32 {
+pub fn solve_solution1<R: BufRead>(_reader: R) -> usize {
     0
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> u32 {
+pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
     0
 }
 
