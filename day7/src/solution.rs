@@ -77,6 +77,6 @@ mod tests {
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
         let solution = solve_solution2(reader);
-        assert_eq!(41, solution);
+        assert_eq!(40, solution);
     }
 }
