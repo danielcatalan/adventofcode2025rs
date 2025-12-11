@@ -9,5 +9,5 @@ members = [
     "day7",
     "matrix",
 ]
-default-members = ["day6"]
+default-members = ["day7"]
 resolver = "3"
