@@ -18,8 +18,9 @@ pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
     let diagram = parse_tachyon_manifold(reader);
     diagram.find_split_count()
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+        let diagram = parse_tachyon_manifold(reader);
+    diagram.find_timeline_count()
 }
 
 #[cfg(test)]
@@ -56,14 +57,26 @@ mod tests {
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            ".......S.......
+...............
+.......^.......
+...............
+......^.^......
+...............
+.....^.^.^.....
+...............
+....^.^...^....
+...............
+...^.^...^.^...
+...............
+..^...^.....^..
+...............
+.^.^.^.^.^...^.
+...............",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(41, solution);
     }
 }

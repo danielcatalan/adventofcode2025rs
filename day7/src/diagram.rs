@@ -43,6 +43,37 @@ impl TachyonManifold  {
         split_counter
     }
 
+    pub fn find_timeline_count(&self) -> usize{
+        let mut beam_log = self.beam_start2();
+        let row_len = self.row_length();
+
+        // Iterate through Row numbers
+        for r in 1..row_len{
+            let mut new_beam_log = HashSet::new();
+            for (_brow, bcol) in beam_log.iter(){
+
+                let pos = (r, *bcol);
+                let cell = self.get_cell(&pos);
+                match cell {
+                    Cell::Start => panic!("Did not expect Start Cell"),
+                    Cell::EmptySpace => {
+                        new_beam_log.insert(pos);
+                    },
+                    Cell::Splitter => {
+                        let pos1 = (pos.0, pos.1-1);
+                        let pos2 = (pos.0, pos.1+1);
+                        new_beam_log.insert(pos1);
+                        new_beam_log.insert(pos2);
+                        split_counter +=1;
+                    },
+                }
+                
+            }
+            beam_log = new_beam_log;
+        }
+        split_counter
+    }
+
     fn get_cell(&self, pos: &(usize,usize)) -> &Cell{
         &self.content[pos.0][pos.1]
     }
@@ -57,6 +88,12 @@ impl TachyonManifold  {
         let mut beam_log = HashSet::new();
         let _ = beam_log.insert(beam_pos);
         beam_log
+    }
+
+    fn beam_start2(&self) -> Vec<(usize,usize)> {
+        let start_pos = self.content[0].iter().position(|cell| *cell == Cell::Start).expect("Could not find start");
+        let beam_pos = (0,start_pos);
+        vec![beam_pos]
     }
 }
 
