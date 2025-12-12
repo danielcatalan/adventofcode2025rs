@@ -10,7 +10,7 @@ fn main() {
     let f = File::open("day8/input/input.txt").unwrap();
 
     let reader = BufReader::new(f);
-    let solution = solution::solve_solution1(reader);
+    let solution = solution::solve_solution1(reader,1000);
     println!("Solution1: {solution}");
 
     println!("\n...Done.")

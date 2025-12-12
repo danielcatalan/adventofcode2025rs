@@ -11,9 +11,9 @@ use crate::parser::parse_christmas_decoration;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
-    let mut christ_dec = parse_christmas_decoration(reader);
-    christ_dec.eval_connections()
+pub fn solve_solution1<R: BufRead>(reader: R, loop_limit:usize) -> usize {
+    let christ_dec = parse_christmas_decoration(reader);
+    christ_dec.eval_connections(loop_limit)
 }
 pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
     0
@@ -50,7 +50,7 @@ mod tests {
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let solution = solve_solution1(reader);
+        let solution = solve_solution1(reader,10);
         assert_eq!(40, solution);
     }
 

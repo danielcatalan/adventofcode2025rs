@@ -11,7 +11,7 @@ impl ChristmasDecoration {
         Self { junction_boxs: jbs}
     }
 
-    pub fn eval_connections(&self) -> usize{
+    pub fn eval_connections(&self, loop_limit:usize) -> usize{
         
         // Assign JBs to individual circuits
         // let circuits_assigned_iter = self.junction_boxs.iter()
@@ -37,21 +37,15 @@ impl ChristmasDecoration {
         // Make connections
         let mut loop_counter = 0;
         for distance in distances.iter(){
-            if loop_counter>= 10{
-                break;
-            }
+
             
             let jb1 = distance.jb1;
             let jb2 = distance.jb2;
-            // if circuits_assigned.make_connections(jb1, jb2){
-            //     loop_counter+=1;
-            // }
-            // else{
-            //     continue;
-            // }
             circuits_assigned.make_connections(jb1, jb2);
             loop_counter+=1;
-
+            if !(loop_counter < loop_limit){
+                break;
+            }
         }
         // Multiply size of 3 largest groups
         let mut groups = circuits_assigned.get_groupings();
