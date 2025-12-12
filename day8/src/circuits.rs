@@ -60,5 +60,10 @@ impl<'a> CircuitAssignment<'a>{
         .collect();
         x
     }
+    
+    pub fn number_of_circuits(&self) -> usize {
+        let x = self.bj_assigned.len();
+        x
+    }
 }
 
