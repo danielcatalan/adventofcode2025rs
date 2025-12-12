@@ -12,8 +12,8 @@ use crate::parser::parse_christmas_decoration;
  */
 
 pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
-    let christ_dec = parse_christmas_decoration(reader);
-    0
+    let mut christ_dec = parse_christmas_decoration(reader);
+    christ_dec.eval_connections()
 }
 pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
     0
