@@ -1,8 +1,7 @@
-#[allow(unused_imports)]
-use regex::Regex;
 use std::io::BufRead;
-#[allow(unused_imports)]
-use std::sync::LazyLock;
+
+
+use crate::parser::parse_christmas_decoration;
 
 /* Notes
  *
@@ -12,7 +11,8 @@ use std::sync::LazyLock;
  *
  */
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> usize {
+pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
+    let christ_dec = parse_christmas_decoration(reader);
     0
 }
 pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
@@ -27,15 +27,31 @@ mod tests {
     #[test]
     fn example_solution1() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "162,817,812
+57,618,57
+906,360,560
+592,479,940
+352,342,300
+466,668,158
+542,29,236
+431,825,988
+739,650,466
+52,470,668
+216,146,977
+819,987,18
+117,168,530
+805,96,715
+346,949,466
+970,615,88
+941,993,340
+862,61,35
+984,92,344
+425,690,689",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution1(reader);
-        todo!("write an assertion")
+        let solution = solve_solution1(reader);
+        assert_eq!(40, solution);
     }
 
     #[test]
