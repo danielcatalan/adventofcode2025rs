@@ -1,19 +1,10 @@
-#[allow(unused_imports)]
-use regex::Regex;
 use std::io::BufRead;
-#[allow(unused_imports)]
-use std::sync::LazyLock;
 
-/* Notes
- *
- * for regex use Lazy struct.
- * eg:
- *  static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\d").unwrap());
- *
- */
+use crate::parser::parse_tiles;
 
-pub fn solve_solution1<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
+    let theater = parse_tiles(reader);
+    theater.largest_area()
 }
 pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
     0
@@ -27,15 +18,19 @@ mod tests {
     #[test]
     fn example_solution1() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "7,1
+11,1
+11,7
+9,7
+9,5
+2,5
+2,3
+7,3",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution1(reader);
-        todo!("write an assertion")
+        let solution = solve_solution1(reader);
+        assert_eq!(50, solution)
     }
 
     #[test]
