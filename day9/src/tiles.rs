@@ -1,5 +1,5 @@
 pub struct RedTile {
-    position: (usize, usize),
+    pub position: (usize, usize),
 }
 
 impl RedTile {
