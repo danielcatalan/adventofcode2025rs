@@ -6,8 +6,9 @@ pub fn solve_solution1<R: BufRead>(reader: R) -> usize {
     let theater = parse_tiles(reader);
     theater.largest_area()
 }
-pub fn solve_solution2<R: BufRead>(_reader: R) -> usize {
-    0
+pub fn solve_solution2<R: BufRead>(reader: R) -> usize {
+    let theater = parse_tiles(reader);
+    theater.largest_red_grean_area()
 }
 
 #[cfg(test)]
@@ -36,14 +37,18 @@ mod tests {
     #[test]
     fn example_solution2() {
         let input = String::from_str(
-            "some
-lines
-of
-text",
+            "7,1
+11,1
+11,7
+9,7
+9,5
+2,5
+2,3
+7,3",
         )
         .unwrap();
         let reader = BufReader::new(input.as_bytes());
-        let _solution = solve_solution2(reader);
-        todo!("write an assertion")
+        let solution = solve_solution2(reader);
+        assert_eq!(24, solution)
     }
 }

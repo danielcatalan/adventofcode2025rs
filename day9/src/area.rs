@@ -1,8 +1,8 @@
 use crate::tiles::RedTile;
 
 pub struct Area<'a> {
-    tile1: &'a RedTile,
-    tile2: &'a RedTile,
+    pub tile1: &'a RedTile,
+    pub tile2: &'a RedTile,
     pub area: usize,
 }
 
