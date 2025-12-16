@@ -65,6 +65,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "day10"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+ "toml",
+ "ureq",
+]
+
+[[package]]
 name = "day2"
 version = "0.1.0"
 dependencies = [
@@ -138,6 +148,7 @@ dependencies = [
 name = "day9"
 version = "0.1.0"
 dependencies = [
+ "matrix",
  "regex",
  "serde",
  "toml",

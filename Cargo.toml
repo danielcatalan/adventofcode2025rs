@@ -14,3 +14,6 @@ members = [
 ]
 default-members = ["day7"]
 resolver = "3"
+
+[workspace.dependencies]
+matrix = {path = "./matrix"}
