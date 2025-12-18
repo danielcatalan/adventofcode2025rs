@@ -30,18 +30,8 @@ impl Theater {
         let floorplan = FloorPlan::from_redtiles(&self.tiles);
         
         // Find Areas
-        let tile_len = self.tiles.len();
-        let mut areas = Vec::new();
-        for tile1_idx in 0..(tile_len - 1) {
-            for tile2_idx in (tile1_idx + 1)..tile_len {
-                let tile1 = &self.tiles[tile1_idx];
-                let tile2 = &self.tiles[tile2_idx];
-                let area = Area::new(tile1, tile2);
-                areas.push(area);
-            }
-        }
-        areas.sort_by(|a1, a2| a1.area.cmp(&a2.area)); // min --> max
-        areas.reverse(); // max --> min
+        let areas = find_areas(&self.tiles);
+
         
         'area_loop: for area in areas {
             let perimeter = area.get_perimeter();
@@ -55,4 +45,20 @@ impl Theater {
         }
         panic!("Could not find area")
     }
+}
+
+fn find_areas(tiles: &Vec<RedTile>) -> Vec<Area<'_>>{
+    let tile_len = tiles.len();
+    let mut areas = Vec::new();
+    for tile1_idx in 0..(tile_len - 1) {
+        for tile2_idx in (tile1_idx + 1)..tile_len {
+            let tile1 = &tiles[tile1_idx];
+            let tile2 = &tiles[tile2_idx];
+            let area = Area::new(tile1, tile2);
+            areas.push(area);
+        }
+    }
+    areas.sort_by(|a1, a2| a1.area.cmp(&a2.area)); // min --> max
+    areas.reverse(); // max --> min
+    areas
 }

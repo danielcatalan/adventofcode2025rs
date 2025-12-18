@@ -1,11 +1,27 @@
 use matrix::Matrix;
-
 use crate::tiles::RedTile;
+
+#[derive(PartialEq)]
+pub enum GreenTileType{
+    Top,
+    Bottom,
+    Left,
+    Right,
+}
+#[derive(PartialEq)]
+pub enum RedTileType{
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
 
 #[derive(PartialEq)]
 pub enum TileType{
     Unkown,
-    GreenTile,
+    GreenTile(GreenTileType),
+    RedTile(RedTileType),
     Space
 }
 
