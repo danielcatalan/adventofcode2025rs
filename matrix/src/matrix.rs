@@ -6,7 +6,7 @@ pub struct Matrix<T>{
     col_len: usize
 }
 
-impl<T> Matrix<T>{
+impl<T:Default+Clone> Matrix<T>{
     // pub fn from_iter<It>(iter: It, row_len: usize,col_len: usize) -> Result<Self,()>
     // where It: Iterator, Vec<T>: FromIterator<<It as Iterator>::Item>
     // {
@@ -16,6 +16,10 @@ impl<T> Matrix<T>{
     //     }
     //     return Err(());
     // }
+    pub fn new(row_len: usize, col_len: usize) -> Self{
+        let content = vec![vec![T::default(); col_len]; row_len];
+        Self { content, row_len, col_len }
+    }
 
     pub fn from_vv(table: Vec<Vec<T>>) -> Result<Self,()>{
         let row_len = table.len();
@@ -66,9 +70,6 @@ mod tests {
         assert_eq!(5, *mat.get(1,1).unwrap());
         assert_eq!(6, *mat.get(1,2).unwrap());
         assert_eq!(3, mat.row_len());
-        assert_eq!(4, mat.col_len());
-        
-
-        
+        assert_eq!(4, mat.col_len());        
     }
 }

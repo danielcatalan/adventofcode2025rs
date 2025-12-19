@@ -36,7 +36,8 @@ impl FloorPlan {
     }
     
     pub(crate) fn is_space(&self, point: &(usize, usize)) -> bool {
-        let tile = self.matrix.get(point);
+        let (r,c) = point;
+        let tile = self.matrix.get(*r,*c);
         if *tile == TileType::Space{
             return true;
         }
@@ -45,10 +46,10 @@ impl FloorPlan {
 
     fn draw_red_tile(mat: &mut TileMatrix, red_tile: &RedTile){
         let (r,c) = red_tile.position;
-        let top_tile = mat.get(&(r-1 ,c));
-        let bottom_tile = mat.get(&(r+1, c));
-        let left_tile = mat.get(&(r, c-1));
-        let right_tile = mat.get(&(r, c+1));
+        let top_tile = mat.get(r-1 ,c);
+        let bottom_tile = mat.get(r+1, c);
+        let left_tile = mat.get(r, c-1);
+        let right_tile = mat.get(r, c+1);
 
         let tile_type = match (top_tile, bottom_tile, left_tile, right_tile) {
             (_, GreenTile(Left), _, GreenTile(Top)) => TileType::RedTile(RedTileType::TopLeft),
@@ -62,7 +63,8 @@ impl FloorPlan {
 
             _ => panic!("Unknown combination of tiles")
         };
-        mat.set(red_tile.position, tile_type)
+        
+        mat.set(r,c, tile_type)
     }
 }
 
@@ -121,7 +123,8 @@ fn draw_green_lines(mat: &mut TileMatrix, straight_lines: &Vec<StraightLine>) ->
     for line in straight_lines{
         for point in line.points(){
             let green_tile = orientation.get_green_tile(line);
-            mat.set(point, green_tile)
+            let (r,c) = point;
+            mat.set(r,c, green_tile)
         }
     }
     orientation
