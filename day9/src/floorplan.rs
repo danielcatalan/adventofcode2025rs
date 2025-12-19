@@ -1,6 +1,11 @@
 
-use crate::{straightline::StraightLine, tilematrix::{GreenTileType, RedTileType, TileMatrix, TileType}, tiles::RedTile};
-
+use crate::{straightline::StraightLine, tilematrix::{GreenTileType, TileMatrix, TileType}, tiles::RedTile};
+use crate::tilematrix::RedTileType::{
+    BottomLeft,
+    BottomRight,
+    TopLeft,
+    TopRight
+};
 
 
 pub struct FloorPlan{
@@ -32,13 +37,16 @@ impl FloorPlan {
             Self::draw_red_tile(&mut mat, red_tile);
         }
 
+        // Fill rest of elements in matrix
+        Self::fill_matrix(&mut mat);
+
         Self { matrix: mat }
     }
     
     pub(crate) fn is_space(&self, point: &(usize, usize)) -> bool {
         let (r,c) = point;
         let tile = self.matrix.get(*r,*c);
-        if *tile == TileType::Space{
+        if let Some(TileType::Space) = tile{
             return true;
         }
         false
@@ -52,19 +60,44 @@ impl FloorPlan {
         let right_tile = mat.get(r, c+1);
 
         let tile_type = match (top_tile, bottom_tile, left_tile, right_tile) {
-            (_, GreenTile(Left), _, GreenTile(Top)) => TileType::RedTile(RedTileType::TopLeft),
-            (GreenTile(Left), _, GreenTile(Top), _) => TileType::RedTile(RedTileType::TopLeft),
-            (_, GreenTile(Right), GreenTile(Top), _) => TileType::RedTile(RedTileType::TopRight),
-            (GreenTile(Right), _, _, GreenTile(Top)) => TileType::RedTile(RedTileType::TopRight),
-            (GreenTile(Right), _, GreenTile(Bottom), _) => TileType::RedTile(RedTileType::BottomRight),
-            (_, GreenTile(Right), _, GreenTile(Bottom)) => TileType::RedTile(RedTileType::BottomRight),
-            (GreenTile(Left), _, _, GreenTile(Bottom)) => TileType::RedTile(RedTileType::BottomLeft),
-            (_, GreenTile(Left), GreenTile(Bottom), _) => TileType::RedTile(RedTileType::BottomLeft),
+            (_, Some(GreenTile(Left)), _, Some(GreenTile(Top))) => TileType::RedTile(TopLeft),
+            (Some(GreenTile(Left)), _, Some(GreenTile(Top)), _) => TileType::RedTile(TopLeft),
+            (_, Some(GreenTile(Right)), Some(GreenTile(Top)), _) => TileType::RedTile(TopRight),
+            (Some(GreenTile(Right)), _, _, Some(GreenTile(Top))) => TileType::RedTile(TopRight),
+            (Some(GreenTile(Right)), _, Some(GreenTile(Bottom)), _) => TileType::RedTile(BottomRight),
+            (_, Some(GreenTile(Right)), _, Some(GreenTile(Bottom))) => TileType::RedTile(BottomRight),
+            (Some(GreenTile(Left)), _, _, Some(GreenTile(Bottom))) => TileType::RedTile(BottomLeft),
+            (_, Some(GreenTile(Left)), Some(GreenTile(Bottom)), _) => TileType::RedTile(BottomLeft),
 
             _ => panic!("Unknown combination of tiles")
         };
         
-        mat.set(r,c, tile_type)
+        //mat.set(r,c, tile_type)
+        let item = mat.get_mut(r, c).unwrap();
+        *item = tile_type;
+    }
+
+    fn fill_matrix(mat: &mut TileMatrix){
+        let row_range = mat.row_range();
+        for row in row_range{
+            let col_range = mat.col_range();
+            for col in col_range{
+                if let Some(TileType::Unkown) = mat.get(row,col){
+                    //check left of this tile
+                    let left_tile = mat.get(row,col-1);
+                    let new_tile = match left_tile{
+                        None => TileType::Space,
+                        Some(TileType::GreenTile(Left)) => TileType::GreenTile(Fill),
+                        Some(TileType::GreenTile(Fill)) => TileType::GreenTile(Fill),
+                        Some(TileType::RedTile(TopLeft)) => TileType::GreenTile(Fill),
+                        Some(TileType::RedTile(BottomLeft)) => TileType::GreenTile(Fill),
+                        _ => TileType::Space
+                    };
+                    let item = mat.get_mut(row, col).unwrap();
+                    *item = new_tile;
+                }
+            }
+        }
     }
 }
 
@@ -74,7 +107,7 @@ enum Orientation{
 }
 
 use TileType::GreenTile;
-use GreenTileType::{Top,Bottom,Left,Right};
+use GreenTileType::{Top,Bottom,Left,Right,Fill};
 impl Orientation{
     
     fn get_green_tile(&self,line: &StraightLine) -> TileType{
@@ -124,7 +157,9 @@ fn draw_green_lines(mat: &mut TileMatrix, straight_lines: &Vec<StraightLine>) ->
         for point in line.points(){
             let green_tile = orientation.get_green_tile(line);
             let (r,c) = point;
-            mat.set(r,c, green_tile)
+            // mat.set(r,c, green_tile)
+            let item = mat.get_mut(r, c).unwrap();
+            *item = green_tile;
         }
     }
     orientation

@@ -42,6 +42,13 @@ impl<T:Default+Clone> Matrix<T>{
         return None;
     }
 
+    pub fn get_mut(&mut self, r: usize, c: usize) -> Option<&mut T>{
+        if (self.row_len > r) && (self.col_len > c){
+            return Some(&mut self.content[r][c]);
+        }
+        return None;
+    }
+
     pub fn row_len(&self) -> usize{
         self.row_len
     }

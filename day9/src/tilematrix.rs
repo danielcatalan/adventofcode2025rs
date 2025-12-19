@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use matrix::Matrix;
 use crate::tiles::RedTile;
 
@@ -7,6 +9,7 @@ pub enum GreenTileType{
     Bottom,
     Left,
     Right,
+    Fill,
 }
 #[derive(PartialEq, Clone,Debug)]
 pub enum RedTileType{
@@ -58,16 +61,41 @@ impl TileMatrix {
         let col_len = (col_max - col_min) + 1;
         let mat = Matrix::new(row_len, col_len);
 
-        Self{mat,row_offset:row_min, col_offset:col_min}
+        Self{mat, row_offset:row_min, col_offset:col_min}
     }
     
-    pub(crate) fn get(&self, row: usize, col: usize) -> &TileType {
-        todo!()
+    pub(crate) fn get(&self, row: usize, col: usize) -> Option<&TileType> {
+        if (row < self.row_offset) || (col < self.col_offset){
+            return None;
+        }
+        let true_row = row - self.row_offset;
+        let true_col = col - self.col_offset;
+        self.mat.get(true_row, true_col)
+    }
+
+    pub(crate) fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut TileType> {
+        if (row < self.row_offset) || (col < self.col_offset){
+            return None;
+        }
+        let true_row = row - self.row_offset;
+        let true_col = col - self.col_offset;
+        self.mat.get_mut(true_row, true_col)
     }
     
-    pub(crate) fn set(&mut self, row: usize, col: usize, green_tile: TileType) {
-        todo!()
+    pub(crate) fn row_range(&self) -> Range<usize> {
+        let row_max = self.row_offset + self.mat.row_len();
+        let row_offset = self.row_offset;
+
+        row_offset..row_max
     }
+    
+    pub(crate) fn col_range(&self) -> Range<usize> {
+        let col_max = self.col_offset + self.mat.col_len();
+        let col_offset = self.col_offset;
+        col_offset..col_max
+    }
+    
+
 }
 
 #[cfg(test)]
@@ -75,17 +103,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_tilematrix() {
-        fn red_tile(r:usize,c:usize) -> RedTile{
-            RedTile::new((r,c))
-        }
+    fn test_tilematrix_new() {
 
-        let red_tiles = vec![red_tile(100, 100), red_tile(100, 101),red_tile(102, 101),red_tile(102, 100)];
-        let tile_matrix = TileMatrix::new(&red_tiles);
+
+        let tile_matrix = example_mat();
         let inner_mat = &tile_matrix.mat;
         assert_eq!(3, inner_mat.row_len());
         assert_eq!(2, inner_mat.col_len());
 
-        assert_eq!(TileType::Unkown, *tile_matrix.get(100,100))
+        assert_eq!(TileType::Unkown, *tile_matrix.get(100,100).unwrap())
+    }
+
+    
+
+    fn example_mat() -> TileMatrix{
+        fn red_tile(r:usize,c:usize) -> RedTile{
+            RedTile::new((r,c))
+        }
+        let red_tiles = vec![red_tile(100, 100), red_tile(100, 101),red_tile(102, 101),red_tile(102, 100)];
+        TileMatrix::new(&red_tiles)
     }
 }
