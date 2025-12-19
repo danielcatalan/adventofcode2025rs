@@ -27,6 +27,10 @@ impl FloorPlan {
             straight_lines.push(line);
             prev_tile = red_tile;
         }
+        // do last connection
+        let first_tile = &red_tiles[0];
+        let line = StraightLine::forms(prev_tile, first_tile).unwrap();
+        straight_lines.push(line);
 
         //draw lines of green on matrix
         let _ = draw_green_lines(&mut mat, &straight_lines);
