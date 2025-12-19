@@ -16,9 +16,11 @@ impl FloorPlan {
     pub fn from_redtiles(red_tiles: &Vec<RedTile>) -> Self{
 
         // init Matrix
+        println!("Init matrix...");
         let mut mat = TileMatrix::new(red_tiles);
 
         // create ranges for Vert/Horiz line
+        println!("Create lines from redtiles...");
         let mut red_tile_iter = red_tiles.iter();
         let mut prev_tile = red_tile_iter.next().unwrap(); // get First tile
         let mut straight_lines = Vec::new();
@@ -33,15 +35,18 @@ impl FloorPlan {
         straight_lines.push(line);
 
         //draw lines of green on matrix
+        println!("Draw greenlines...");
         let _ = draw_green_lines(&mut mat, &straight_lines);
 
 
         // draw red corners
+        println!("Draw redcorners...");
         for red_tile in red_tiles{
             Self::draw_red_tile(&mut mat, red_tile);
         }
 
         // Fill rest of elements in matrix
+        println!("Fill matrix...");
         Self::fill_matrix(&mut mat);
 
         Self { matrix: mat }

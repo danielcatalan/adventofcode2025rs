@@ -27,12 +27,14 @@ impl Theater {
 
     pub fn largest_red_grean_area(&self) -> usize {
         // Build Floor-plan
+        println!("**Build Floor-plan**");
         let floorplan = FloorPlan::from_redtiles(&self.tiles);
         
         // Find Areas
+        println!("**Find all possible Areas**");
         let areas = find_areas(&self.tiles);
 
-        
+        println!("**Get Area that fits**");
         'area_loop: for area in areas {
             let perimeter = area.get_perimeter();
             for point in perimeter{
