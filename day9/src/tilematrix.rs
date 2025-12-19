@@ -103,7 +103,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_tilematrix_new() {
+    fn test_get() {
 
 
         let tile_matrix = example_mat();
@@ -114,8 +114,22 @@ mod tests {
         assert_eq!(TileType::Unkown, *tile_matrix.get(100,100).unwrap())
     }
 
-    
+    #[test]
+    fn test_get_mut() {
+        let mut tile_matrix = example_mat(); // 3x2 matrix
+        assert_eq!(TileType::Unkown, *tile_matrix.get(100,100).unwrap());
+        
+        let item = tile_matrix.get_mut(100, 100).unwrap();
+        *item = TileType::Space;
 
+        assert_eq!(TileType::Space, *tile_matrix.get(100,100).unwrap());
+        let inner_mat = tile_matrix.mat;
+        assert_eq!(TileType::Space, *inner_mat.get(0,0).unwrap());
+    }
+
+
+
+    /// 3r x 2c matrix
     fn example_mat() -> TileMatrix{
         fn red_tile(r:usize,c:usize) -> RedTile{
             RedTile::new((r,c))
