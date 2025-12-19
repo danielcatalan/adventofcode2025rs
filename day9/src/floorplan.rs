@@ -1,5 +1,5 @@
 
-use crate::{straightline::{self, StraightLine}, tilematrix::{GreenTileType, TileMatrix, TileType}, tiles::RedTile};
+use crate::{straightline::StraightLine, tilematrix::{GreenTileType, RedTileType, TileMatrix, TileType}, tiles::RedTile};
 
 
 
@@ -23,16 +23,16 @@ impl FloorPlan {
             prev_tile = red_tile;
         }
 
-        //draw matrix from lines of green
-        let orientation = draw_green_lines(&mut mat, &straight_lines);
+        //draw lines of green on matrix
+        let _ = draw_green_lines(&mut mat, &straight_lines);
 
 
         // draw red corners
         for red_tile in red_tiles{
-            mat.set(red_tile.position, TileType::RedTile)
+            Self::draw_red_tile(&mut mat, red_tile);
         }
 
-        todo!()
+        Self { matrix: mat }
     }
     
     pub(crate) fn is_space(&self, point: &(usize, usize)) -> bool {
@@ -41,6 +41,28 @@ impl FloorPlan {
             return true;
         }
         false
+    }
+
+    fn draw_red_tile(mat: &mut TileMatrix, red_tile: &RedTile){
+        let (r,c) = red_tile.position;
+        let top_tile = mat.get(&(r-1 ,c));
+        let bottom_tile = mat.get(&(r+1, c));
+        let left_tile = mat.get(&(r, c-1));
+        let right_tile = mat.get(&(r, c+1));
+
+        let tile_type = match (top_tile, bottom_tile, left_tile, right_tile) {
+            (_, GreenTile(Left), _, GreenTile(Top)) => TileType::RedTile(RedTileType::TopLeft),
+            (GreenTile(Left), _, GreenTile(Top), _) => TileType::RedTile(RedTileType::TopLeft),
+            (_, GreenTile(Right), GreenTile(Top), _) => TileType::RedTile(RedTileType::TopRight),
+            (GreenTile(Right), _, _, GreenTile(Top)) => TileType::RedTile(RedTileType::TopRight),
+            (GreenTile(Right), _, GreenTile(Bottom), _) => TileType::RedTile(RedTileType::BottomRight),
+            (_, GreenTile(Right), _, GreenTile(Bottom)) => TileType::RedTile(RedTileType::BottomRight),
+            (GreenTile(Left), _, _, GreenTile(Bottom)) => TileType::RedTile(RedTileType::BottomLeft),
+            (_, GreenTile(Left), GreenTile(Bottom), _) => TileType::RedTile(RedTileType::BottomLeft),
+
+            _ => panic!("Unknown combination of tiles")
+        };
+        mat.set(red_tile.position, tile_type)
     }
 }
 
