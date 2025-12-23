@@ -29,27 +29,27 @@ impl Theater {
         // Build Floor-plan
         println!("**Build Floor-plan**");
         let floorplan = FloorPlan::from_redtiles(&self.tiles);
-        
-        // Find Areas
+
+        // Find all Areas
         println!("**Find all possible Areas**");
         let areas = find_areas(&self.tiles);
 
-        println!("**Get Area that fits**");
+        println!("**Get largest Area that fits**");
         'area_loop: for area in areas {
             let perimeter = area.get_perimeter();
-            for point in perimeter{
-                if floorplan.is_space(&point){
+            for point in perimeter {
+                if floorplan.is_space(&point) {
                     continue 'area_loop;
                 }
             }
             // no spaces in this area
-            return area.area
+            return area.area;
         }
         panic!("Could not find area")
     }
 }
 
-fn find_areas(tiles: &Vec<RedTile>) -> Vec<Area<'_>>{
+fn find_areas(tiles: &Vec<RedTile>) -> Vec<Area<'_>> {
     let tile_len = tiles.len();
     let mut areas = Vec::new();
     for tile1_idx in 0..(tile_len - 1) {
