@@ -1,11 +1,11 @@
-use crate::{area::Area, floorplan::FloorPlan, tiles::RedTile};
+use crate::{area::Area, floorplan::FloorPlan, tiles::RedTilePos};
 
 pub struct Theater {
-    tiles: Vec<RedTile>,
+    tiles: Vec<RedTilePos>,
 }
 
 impl Theater {
-    pub fn new(tiles: Vec<RedTile>) -> Theater {
+    pub fn new(tiles: Vec<RedTilePos>) -> Theater {
         Theater { tiles }
     }
 
@@ -49,7 +49,7 @@ impl Theater {
     }
 }
 
-fn find_areas(tiles: &Vec<RedTile>) -> Vec<Area<'_>> {
+fn find_areas(tiles: &Vec<RedTilePos>) -> Vec<Area<'_>> {
     let tile_len = tiles.len();
     let mut areas = Vec::new();
     for tile1_idx in 0..(tile_len - 1) {

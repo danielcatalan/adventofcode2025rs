@@ -1,8 +1,8 @@
-pub struct RedTile {
+pub struct RedTilePos {
     pub position: (usize, usize),
 }
 
-impl RedTile {
+impl RedTilePos {
     pub fn new(position: (usize, usize)) -> Self {
         Self { position }
     }
