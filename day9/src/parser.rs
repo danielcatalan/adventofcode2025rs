@@ -4,7 +4,7 @@ use std::io::BufRead;
 #[allow(unused_imports)]
 use std::sync::LazyLock;
 
-use crate::{theater::Theater, tiles::RedTile};
+use crate::{theater::Theater, tiles::RedTilePos};
 
 /* Notes
  *
@@ -15,7 +15,7 @@ use crate::{theater::Theater, tiles::RedTile};
  */
 
 pub fn parse_tiles<R: BufRead>(reader: R) -> Theater {
-    let tiles: Vec<RedTile> = reader
+    let tiles: Vec<RedTilePos> = reader
         .lines()
         .map(|line| line.unwrap())
         .map(|line| parse_one_tile(&line))
@@ -23,8 +23,8 @@ pub fn parse_tiles<R: BufRead>(reader: R) -> Theater {
     Theater::new(tiles)
 }
 
-fn parse_one_tile(line: &str) -> RedTile {
+fn parse_one_tile(line: &str) -> RedTilePos {
     let positions: Vec<usize> = line.split(',').map(|s| s.parse().unwrap()).collect();
 
-    RedTile::new((positions[0], positions[1]))
+    RedTilePos::new((positions[0], positions[1]))
 }
