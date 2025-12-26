@@ -1,4 +1,5 @@
-use std::ops::Range;
+use core::panic;
+use std::{collections::HashMap, ops::Range};
 
 use crate::tiles::RedTilePos;
 use matrix::Matrix;
@@ -25,13 +26,14 @@ pub enum TileType {
     Unkown,
     GreenTile(GreenTileType),
     RedTile(RedTileType),
-    Space,
 }
 
 pub struct TileMatrix {
-    mat: Matrix<TileType>,
-    row_offset: usize,
-    col_offset: usize,
+    pub map: HashMap<(usize, usize), TileType>,
+    row_min: usize,
+    row_max: usize,
+    col_min: usize,
+    col_max: usize,
 }
 impl TileMatrix {
     pub fn new(tiles: &Vec<RedTilePos>) -> Self {
@@ -55,45 +57,64 @@ impl TileMatrix {
                 col_max = col;
             }
         }
-        let row_len = (row_max - row_min) + 1;
-        let col_len = (col_max - col_min) + 1;
-        let mat = Matrix::new(row_len, col_len);
+        let map = HashMap::new();
 
         Self {
-            mat,
-            row_offset: row_min,
-            col_offset: col_min,
+            map,
+            row_min,
+            row_max,
+            col_min,
+            col_max,
         }
     }
 
+    /// Returns tile-type if within bounds. Returns `None` if
+    /// out of bounds
     pub(crate) fn get(&self, row: usize, col: usize) -> Option<&TileType> {
-        if (row < self.row_offset) || (col < self.col_offset) {
+        if (row < self.row_min)
+            || (row > self.row_max)
+            || (col < self.col_min)
+            || (col > self.col_max)
+        {
             return None;
         }
-        let true_row = row - self.row_offset;
-        let true_col = col - self.col_offset;
-        self.mat.get(true_row, true_col)
+
+        // self.map.get(true_row, true_col)
+        if let Some(tile) = self.map.get(&(row, col)) {
+            return Some(tile);
+        } else {
+            Some(&TileType::Unkown)
+        }
+    }
+    fn check_bound(&self, row: usize, col: usize) -> bool {
+        if (row < self.row_min)
+            || (row > self.row_max)
+            || (col < self.col_min)
+            || (col > self.col_max)
+        {
+            return false;
+        }
+        true
     }
 
-    pub(crate) fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut TileType> {
-        if (row < self.row_offset) || (col < self.col_offset) {
-            return None;
+    pub fn set(&mut self, row: usize, col: usize, tile_type: TileType) {
+        if !self.check_bound(row, col) {
+            panic!("Out of bounds");
         }
-        let true_row = row - self.row_offset;
-        let true_col = col - self.col_offset;
-        self.mat.get_mut(true_row, true_col)
+
+        self.map.insert((row, col), tile_type);
     }
 
     pub(crate) fn row_range(&self) -> Range<usize> {
-        let row_max = self.row_offset + self.mat.row_len();
-        let row_offset = self.row_offset;
+        let row_max = self.row_max + 1;
+        let row_offset = self.row_min;
 
         row_offset..row_max
     }
 
     pub(crate) fn col_range(&self) -> Range<usize> {
-        let col_max = self.col_offset + self.mat.col_len();
-        let col_offset = self.col_offset;
+        let col_max = self.col_max + 1;
+        let col_offset = self.col_min;
         col_offset..col_max
     }
 }
@@ -105,10 +126,6 @@ mod tests {
     #[test]
     fn test_get() {
         let tile_matrix = example_mat();
-        let inner_mat = &tile_matrix.mat;
-        assert_eq!(3, inner_mat.row_len());
-        assert_eq!(2, inner_mat.col_len());
-
         assert_eq!(TileType::Unkown, *tile_matrix.get(100, 100).unwrap())
     }
 
@@ -117,15 +134,16 @@ mod tests {
         let mut tile_matrix = example_mat(); // 3x2 matrix
         assert_eq!(TileType::Unkown, *tile_matrix.get(100, 100).unwrap());
 
-        let item = tile_matrix.get_mut(100, 100).unwrap();
-        *item = TileType::Space;
-
-        assert_eq!(TileType::Space, *tile_matrix.get(100, 100).unwrap());
-        let inner_mat = tile_matrix.mat;
-        assert_eq!(TileType::Space, *inner_mat.get(0, 0).unwrap());
+        // let item = tile_matrix.get_mut(100, 100).unwrap();
+        // *item = TileType::Space;
+        tile_matrix.set(100, 100, TileType::GreenTile(GreenTileType::Top));
+        assert_eq!(
+            TileType::GreenTile(GreenTileType::Top),
+            *tile_matrix.get(100, 100).unwrap()
+        );
     }
 
-    /// 3r x 2c matrix
+    // 3r x 2c matrix
     fn example_mat() -> TileMatrix {
         fn red_tile(r: usize, c: usize) -> RedTilePos {
             RedTilePos::new((r, c))

@@ -35,14 +35,15 @@ impl Theater {
         let areas = find_areas(&self.tiles);
 
         println!("**Get largest Area that fits**");
-        'area_loop: for area in areas {
-            let perimeter = area.get_perimeter();
-            for point in perimeter {
-                if floorplan.is_space(&point) {
-                    continue 'area_loop;
+        // println!("Area count: {}", areas.len());
+        'arealoop: for area in areas.iter() {
+            // println!("Try area{}", i);
+            let range = area.get_inner_perimeter();
+            for (r, c) in range {
+                if floorplan.contains_rg_tiles(r, c) {
+                    continue 'arealoop;
                 }
             }
-            // no spaces in this area
             return area.area;
         }
         panic!("Could not find area")

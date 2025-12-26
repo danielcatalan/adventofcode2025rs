@@ -1,3 +1,6 @@
+use std::usize;
+
+use crate::area::Perimeter;
 use crate::tilematrix::RedTileType::{BottomLeft, BottomRight, TopLeft, TopRight};
 use crate::{
     straightline::StraightLine,
@@ -40,20 +43,11 @@ impl FloorPlan {
             Self::draw_red_tile(&mut mat, red_tile);
         }
 
-        // Fill rest of elements in matrix
-        println!("Fill matrix...");
-        Self::fill_matrix(&mut mat);
+        // // Fill rest of elements in matrix
+        // println!("Fill matrix...");
+        // Self::fill_matrix(&mut mat);
 
         Self { matrix: mat }
-    }
-
-    pub(crate) fn is_space(&self, point: &(usize, usize)) -> bool {
-        let (r, c) = point;
-        let tile = self.matrix.get(*r, *c);
-        if let Some(TileType::Space) = tile {
-            return true;
-        }
-        false
     }
 
     fn draw_red_tile(mat: &mut TileMatrix, red_tile: &RedTilePos) {
@@ -80,31 +74,150 @@ impl FloorPlan {
             _ => panic!("Unknown combination of tiles"),
         };
 
-        //mat.set(r,c, tile_type)
-        let item = mat.get_mut(r, c).unwrap();
-        *item = tile_type;
+        // let item = mat.get_mut(r, c).unwrap();
+        // *item = tile_type;
+        mat.set(r, c, tile_type);
     }
 
-    fn fill_matrix(mat: &mut TileMatrix) {
-        let row_range = mat.row_range();
-        for row in row_range {
-            let col_range = mat.col_range();
-            for col in col_range {
-                if let Some(TileType::Unkown) = mat.get(row, col) {
-                    //check left of this tile
-                    let left_tile = mat.get(row, col - 1);
-                    let new_tile = match left_tile {
-                        None => TileType::Space,
-                        Some(TileType::GreenTile(Left)) => TileType::GreenTile(Fill),
-                        Some(TileType::GreenTile(Fill)) => TileType::GreenTile(Fill),
-                        Some(TileType::RedTile(TopLeft)) => TileType::GreenTile(Fill),
-                        Some(TileType::RedTile(BottomLeft)) => TileType::GreenTile(Fill),
-                        _ => TileType::Space,
-                    };
-                    let item = mat.get_mut(row, col).unwrap();
-                    *item = new_tile;
+    pub(crate) fn is_perimeter_in_bounds(&self, perimeter: &Perimeter) -> bool {
+        // check Top
+        for (row, col) in &perimeter.top {
+            let tile = self.matrix.get(*row, *col).unwrap();
+            if let TileType::Unkown = tile {
+                if !self.walk2((row, col), WalkDir::Up) {
+                    return false; // Found invalid tile walking up
+                }
+                // Found valid tile. move on to next tile
+            }
+        }
+
+        // check Bottom
+        for (row, col) in &perimeter.bottom {
+            let tile = self.matrix.get(*row, *col).unwrap();
+            if let TileType::Unkown = tile {
+                if !self.walk2((row, col), WalkDir::Down) {
+                    return false; // Found invalid tile walking down
+                }
+                // Found valid tile. move on to next tile
+            }
+        }
+        // check Left
+        for (row, col) in &perimeter.left {
+            let tile = self.matrix.get(*row, *col).unwrap();
+            if let TileType::Unkown = tile {
+                if !self.walk2((row, col), WalkDir::Left) {
+                    return false; // Found invalid tile walking left
+                }
+                // Found valid tile. move on to next tile
+            }
+        }
+
+        // check Right
+        for (row, col) in &perimeter.right {
+            let tile = self.matrix.get(*row, *col).unwrap();
+            if let TileType::Unkown = tile {
+                if !self.walk2((row, col), WalkDir::Right) {
+                    return false; // Found invalid tile walking right
+                }
+                // Found valid tile. move on to next tile
+            }
+        }
+
+        true
+    }
+
+    fn walk(&self, pos: (&usize, &usize), dir: WalkDir) -> bool {
+        let mut row = *pos.0;
+        let mut col = *pos.1;
+
+        loop {
+            (row, col) = dir.next_pos(row, col);
+            let tile = self.matrix.get(row, col);
+            if let None = tile {
+                return false; // out of bounds
+            } else if let Some(tile) = tile {
+                if let TileType::Unkown = tile {
+                    continue;
+                }
+                if dir.is_accetible_tile(tile) {
+                    return true;
+                } else {
+                    return false;
                 }
             }
+        }
+    }
+
+    fn walk2(&self, pos: (&usize, &usize), dir: WalkDir) -> bool {
+        let row = *pos.0;
+        let col = *pos.1;
+
+        let predicate: Box<dyn Fn(usize, usize) -> bool> = match dir {
+            WalkDir::Up => Box::new(|r, c| (r < row) && (c == col)),
+            WalkDir::Down => Box::new(|r, c| (r > row) && (c == col)),
+            WalkDir::Left => Box::new(|r, c| (r == row) && (c < col)),
+            WalkDir::Right => Box::new(|r, c| (r == row) && (c > col)),
+        };
+
+        let map = &self.matrix.map;
+        let tiles_in_line: Vec<_> = map.iter().filter(|((r, c), _)| predicate(*r, *c)).collect();
+        let len = tiles_in_line.len();
+        if len == 1 {
+            return true;
+        } else if len == 0 {
+            return false;
+        } else if len == 586 {
+            println!("{}", tiles_in_line[0].0.0);
+            panic!();
+        } else {
+            panic!("oh ooh! did not expect {} tiles in line.", len);
+        }
+    }
+
+    pub(crate) fn contains_rg_tiles(&self, r: usize, c: usize) -> bool {
+        let tile = self.matrix.map.get(&(r, c));
+        return true;
+        // match tile {
+        //     Some(_) => true,
+        //     None => false,
+        // }
+    }
+}
+
+enum WalkDir {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+impl WalkDir {
+    fn next_pos(&self, row: usize, col: usize) -> (usize, usize) {
+        match self {
+            WalkDir::Up => (row - 1, col),
+            WalkDir::Down => (row + 1, col),
+            WalkDir::Left => (row, col - 1),
+            WalkDir::Right => (row, col + 1),
+        }
+    }
+
+    fn is_accetible_tile(&self, tile: &TileType) -> bool {
+        match self {
+            WalkDir::Up => match tile {
+                GreenTile(Top) | RedTile(TopLeft) | RedTile(TopRight) => true,
+                _ => false,
+            },
+            WalkDir::Down => match tile {
+                GreenTile(Bottom) | RedTile(BottomLeft) | RedTile(BottomRight) => true,
+                _ => false,
+            },
+            WalkDir::Left => match tile {
+                GreenTile(Left) | RedTile(TopLeft | BottomLeft) => true,
+                _ => false,
+            },
+            WalkDir::Right => match tile {
+                GreenTile(Right) | RedTile(TopRight | BottomRight) => true,
+                _ => false,
+            },
         }
     }
 }
@@ -115,7 +228,7 @@ enum Orientation {
 }
 
 use GreenTileType::{Bottom, Fill, Left, Right, Top};
-use TileType::GreenTile;
+use TileType::{GreenTile, RedTile};
 impl Orientation {
     fn get_green_tile(&self, line: &StraightLine) -> TileType {
         match (self, line) {
@@ -159,8 +272,8 @@ fn draw_green_lines(mat: &mut TileMatrix, straight_lines: &Vec<StraightLine>) ->
 
     // get direction of line being drawn
     let orientation = match top_line {
-        StraightLine::HorizLeftLine(_, _) => Orientation::Clockwise,
-        StraightLine::HorizRightLine(_, _) => Orientation::CounterClockwise,
+        StraightLine::HorizLeftLine(_, _) => Orientation::CounterClockwise,
+        StraightLine::HorizRightLine(_, _) => Orientation::Clockwise,
         _ => panic!("expected only HorizLines"),
     };
     // Now we can draw green lines
@@ -168,9 +281,10 @@ fn draw_green_lines(mat: &mut TileMatrix, straight_lines: &Vec<StraightLine>) ->
         for point in line.points() {
             let green_tile = orientation.get_green_tile(line);
             let (r, c) = point;
-            // mat.set(r,c, green_tile)
-            let item = mat.get_mut(r, c).unwrap();
-            *item = green_tile;
+
+            // let item = mat.get_mut(r, c).unwrap();
+            // *item = green_tile;
+            mat.set(r, c, green_tile);
         }
     }
     orientation
