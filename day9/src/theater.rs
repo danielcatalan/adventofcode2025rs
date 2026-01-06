@@ -36,21 +36,16 @@ impl Theater {
 
         println!("**Get largest Area that fits**");
         // println!("Area count: {}", areas.len());
-        'arealoop: for area in areas.iter() {
-            // println!("Try area{}", i);
-            let range = area.get_inner_perimeter();
-            for (r, c) in range {
-                if floorplan.contains_rg_tiles(r, c) {
-                    continue 'arealoop;
-                }
+        for area in areas.iter() {
+            if !floorplan.check_collition(area){
+                return area.area;
             }
-            return area.area;
         }
         panic!("Could not find area")
     }
 }
 
-fn find_areas(tiles: &Vec<RedTilePos>) -> Vec<Area<'_>> {
+fn find_areas(tiles: &Vec<RedTilePos>) -> Vec<Area> {
     let tile_len = tiles.len();
     let mut areas = Vec::new();
     for tile1_idx in 0..(tile_len - 1) {

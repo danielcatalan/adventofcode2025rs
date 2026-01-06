@@ -1,26 +1,15 @@
 use std::ops::{Range, RangeInclusive};
 
-use crate::tiles::RedTilePos;
+use crate::{position::Position, tiles::RedTilePos};
 
-struct Position{
-    row: usize,
-    col: usize,
-}
 
-impl Position{
-    fn get_position(&self)->(usize,usize){
-        (self.row,self.col)
-    }
-}
+
+
 
 pub struct Area {
     pub tile1: Position,
     pub tile2: Position,
     pub area: usize,
-    left_pos: usize,
-    right_pos: usize,
-    top_pos: usize,
-    bottom_pos:usize
 }
 
 impl Area {
@@ -34,17 +23,25 @@ impl Area {
             row: tile2.position.0,
             col: tile2.position.1,
         };
-        // left right top bottom
-        let left_pos =  tile1.position.1.min(tile2.position.1);
-        let right_pos = tile1.position.1.max(tile2.position.1);
-        let top_pos = tile1.position.0.min(tile2.position.0);
-        let bottom_pos = tile1.position.0.max(tile2.position.0);
         Area { 
             tile1: position1, 
-            tile2: position2, 
-            area,left_pos,right_pos,top_pos,bottom_pos }
+            tile2: position2,
+            area
+        }
+    }
+    pub fn get_left(&self) -> usize {
+        self.tile1.col.min(self.tile2.col)
     }
 
+    pub fn get_right(&self) -> usize {
+        self.tile1.col.max(self.tile2.col)
+    }
+    pub fn get_top(&self) -> usize {
+        self.tile1.row.min(self.tile2.row)
+    }
+    pub fn get_bottom(&self) -> usize {
+        self.tile1.row.max(self.tile2.row)
+    }
     pub fn get_inner_perimeter(&self) -> Vec<(usize, usize)> {
         let tile1_pos = self.tile1.get_position();
         let tile2_pos = self.tile2.get_position();

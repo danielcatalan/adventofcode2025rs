@@ -1,6 +1,8 @@
 use std::usize;
 
-use crate::area::Perimeter;
+use crate::area::{Area, Perimeter};
+use crate::edge::Edge;
+use crate::position::Position;
 use crate::tilematrix::RedTileType::{BottomLeft, BottomRight, TopLeft, TopRight};
 use crate::{
     straightline::StraightLine,
@@ -9,45 +11,39 @@ use crate::{
 };
 
 pub struct FloorPlan {
-    matrix: TileMatrix,
+    edges: Vec<Edge>,
 }
 
 impl FloorPlan {
     pub fn from_redtiles(red_tiles: &Vec<RedTilePos>) -> Self {
-        // init Matrix
-        println!("Init matrix...");
-        let mut mat = TileMatrix::new(red_tiles);
-
-        // create ranges for Vert/Horiz line
+        // create ranges for Edge line
         println!("Create lines from redtiles...");
         let mut red_tile_iter = red_tiles.iter();
         let mut prev_tile = red_tile_iter.next().unwrap(); // get First tile
-        let mut straight_lines = Vec::new();
+        let mut edge_lines = Vec::new();
         for red_tile in red_tile_iter {
-            let line = StraightLine::forms(prev_tile, red_tile).unwrap();
-            straight_lines.push(line);
+            let pos1 = prev_tile.get_pos();
+            let pos2 = red_tile.get_pos();
+            let edge = Edge{
+                start: pos1,
+                end: pos2,
+            };
+            edge_lines.push(edge);
             prev_tile = red_tile;
         }
         // do last connection
         let first_tile = &red_tiles[0];
-        let line = StraightLine::forms(prev_tile, first_tile).unwrap();
-        straight_lines.push(line);
+        let pos1 = prev_tile.get_pos();
+        let pos2 = first_tile.get_pos();
+        let edge = Edge{
+            start: pos1,
+            end: pos2,
+        };
+        
+        edge_lines.push(edge);
 
-        //draw lines of green on matrix
-        println!("Draw greenlines...");
-        let _ = draw_green_lines(&mut mat, &straight_lines);
 
-        // draw red corners
-        println!("Draw redcorners...");
-        for red_tile in red_tiles {
-            Self::draw_red_tile(&mut mat, red_tile);
-        }
-
-        // // Fill rest of elements in matrix
-        // println!("Fill matrix...");
-        // Self::fill_matrix(&mut mat);
-
-        Self { matrix: mat }
+        Self { edges:  edge_lines}
     }
 
     fn draw_red_tile(mat: &mut TileMatrix, red_tile: &RedTilePos) {
@@ -181,6 +177,10 @@ impl FloorPlan {
         //     Some(_) => true,
         //     None => false,
         // }
+    }
+    
+    pub(crate) fn check_collition(&self, area: &Area) -> bool {
+        todo!()
     }
 }
 

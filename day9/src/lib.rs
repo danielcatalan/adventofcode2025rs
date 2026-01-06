@@ -6,3 +6,5 @@ mod straightline;
 mod theater;
 mod tilematrix;
 mod tiles;
+mod edge;
+mod position;
