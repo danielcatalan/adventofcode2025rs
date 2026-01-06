@@ -2,21 +2,52 @@ use std::ops::{Range, RangeInclusive};
 
 use crate::tiles::RedTilePos;
 
-pub struct Area<'a> {
-    pub tile1: &'a RedTilePos,
-    pub tile2: &'a RedTilePos,
-    pub area: usize,
+struct Position{
+    row: usize,
+    col: usize,
 }
 
-impl<'a> Area<'a> {
-    pub fn new(tile1: &'a RedTilePos, tile2: &'a RedTilePos) -> Self {
+impl Position{
+    fn get_position(&self)->(usize,usize){
+        (self.row,self.col)
+    }
+}
+
+pub struct Area {
+    pub tile1: Position,
+    pub tile2: Position,
+    pub area: usize,
+    left_pos: usize,
+    right_pos: usize,
+    top_pos: usize,
+    bottom_pos:usize
+}
+
+impl Area {
+    pub fn new(tile1: &RedTilePos, tile2: & RedTilePos) -> Self {
         let area = calc_area(&tile1.position, &tile2.position);
-        Area { tile1, tile2, area }
+        let position1 = Position{
+            row: tile1.position.0,
+            col: tile1.position.1,
+        };
+        let position2 = Position{
+            row: tile2.position.0,
+            col: tile2.position.1,
+        };
+        // left right top bottom
+        let left_pos =  tile1.position.1.min(tile2.position.1);
+        let right_pos = tile1.position.1.max(tile2.position.1);
+        let top_pos = tile1.position.0.min(tile2.position.0);
+        let bottom_pos = tile1.position.0.max(tile2.position.0);
+        Area { 
+            tile1: position1, 
+            tile2: position2, 
+            area,left_pos,right_pos,top_pos,bottom_pos }
     }
 
     pub fn get_inner_perimeter(&self) -> Vec<(usize, usize)> {
-        let tile1_pos = self.tile1.position;
-        let tile2_pos = self.tile2.position;
+        let tile1_pos = self.tile1.get_position();
+        let tile2_pos = self.tile2.get_position();
         let row_min = tile1_pos.0.min(tile2_pos.0) + 1;
         let row_max = tile1_pos.0.max(tile2_pos.0) - 1;
         let col_min = tile1_pos.1.min(tile2_pos.1) + 1;
@@ -41,8 +72,8 @@ impl<'a> Area<'a> {
     }
 
     pub fn get_perimeter(&self) -> Perimeter {
-        let tile1_pos = self.tile1.position;
-        let tile2_pos = self.tile2.position;
+        let tile1_pos = self.tile1.get_position();
+        let tile2_pos = self.tile2.get_position();
         let row_min = tile1_pos.0.min(tile2_pos.0);
         let row_max = tile1_pos.0.max(tile2_pos.0);
         let col_min = tile1_pos.1.min(tile2_pos.1);
