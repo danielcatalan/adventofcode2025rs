@@ -10,4 +10,8 @@ impl Machine {
             button_wiring_masks: wiring_mask,
         }
     }
+
+    pub fn button_wirings(&self) -> &Vec<usize> {
+        &self.button_wiring_masks
+    }
 }
